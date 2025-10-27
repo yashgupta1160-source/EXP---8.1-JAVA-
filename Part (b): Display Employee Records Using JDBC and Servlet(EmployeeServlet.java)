@@ -1,0 +1,46 @@
+import java.io.*;
+import java.sql.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+
+public class EmployeeServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        String empid = request.getParameter("empid");  // for search
+        String url = "jdbc:mysql://localhost:3306/testdb";
+        String user = "root";
+        String pass = "password";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(url, user, pass);
+
+            Statement stmt = con.createStatement();
+            ResultSet rs;
+
+            if (empid != null && !empid.isEmpty()) {
+                rs = stmt.executeQuery("SELECT * FROM employee WHERE EmpID=" + empid);
+                out.println("<h2>Employee Details</h2>");
+            } else {
+                rs = stmt.executeQuery("SELECT * FROM employee");
+                out.println("<h2>All Employees</h2>");
+            }
+
+            out.println("<table border='1'><tr><th>EmpID</th><th>Name</th><th>Salary</th></tr>");
+            while (rs.next()) {
+                out.println("<tr><td>" + rs.getInt("EmpID") + "</td><td>" +
+                            rs.getString("Name") + "</td><td>" +
+                            rs.getDouble("Salary") + "</td></tr>");
+            }
+            out.println("</table>");
+
+            con.close();
+        } catch (Exception e) {
+            out.println("<h3 style='color:red;'>Error: " + e.getMessage() + "</h3>");
+        }
+    }
+}
