@@ -1,0 +1,42 @@
+import java.io.*;
+import java.sql.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+
+public class AttendanceServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        String studentId = request.getParameter("studentId");
+        String date = request.getParameter("date");
+        String status = request.getParameter("status");
+
+        String url = "jdbc:mysql://localhost:3306/testdb";
+        String user = "root";
+        String pass = "password";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(url, user, pass);
+
+            String sql = "INSERT INTO attendance (StudentID, Date, Status) VALUES (?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, studentId);
+            ps.setString(2, date);
+            ps.setString(3, status);
+
+            int result = ps.executeUpdate();
+            if (result > 0)
+                out.println("<h3>Attendance recorded successfully!</h3>");
+            else
+                out.println("<h3 style='color:red;'>Failed to record attendance!</h3>");
+
+            con.close();
+        } catch (Exception e) {
+            out.println("<h3 style='color:red;'>Error: " + e.getMessage() + "</h3>");
+        }
+    }
+}
