@@ -1,0 +1,7 @@
+CREATE TABLE employee (
+    EmpID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Salary DOUBLE
+);
+
+INSERT INTO employee VALUES (1, 'John', 45000), (2, 'Alice', 55000);
